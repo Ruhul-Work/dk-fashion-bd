@@ -5,7 +5,10 @@ import { Breadcrumbs } from '../components/Breadcrumbs';
 import { SERVER_URL } from '../services/api';
 import { useWebsite } from '../context/WebsiteContext';
 
+import { usePageTitle } from '../lib/usePageTitle'
+
 export default function Cart() {
+  usePageTitle('Cart')
   const { cart, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
   const { settings } = useWebsite();
 

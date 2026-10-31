@@ -307,7 +307,7 @@ export function Navbar() {
                 {logoUrl ? (
                   <img src={logoUrl} alt={settings?.company_name || 'Logo'} className={`h-14 w-auto max-w-[220px] shrink-0 object-contain transition sm:h-16 ${transparent ? 'brightness-0 invert mix-blend-screen' : ''}`} />
                 ) : (
-                  <span className={`font-display text-lg transition-colors duration-500 sm:text-3xl ${transparent ? "text-ivory" : "text-moss"}`}>{settings?.company_name || 'Smart Garments'}</span>
+                  <span className={`font-display text-lg transition-colors duration-500 sm:text-3xl ${transparent ? "text-ivory" : "text-moss"}`}>{settings?.company_name || 'DK Fashion BD'}</span>
                 )}
               </Link>
 

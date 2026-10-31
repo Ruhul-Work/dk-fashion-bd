@@ -7,7 +7,10 @@ import { api, SERVER_URL } from '../services/api';
 import { useWebsite } from '../context/WebsiteContext';
 import { toast } from 'react-hot-toast';
 
+import { usePageTitle } from '../lib/usePageTitle'
+
 export default function Checkout() {
+  usePageTitle('Checkout')
   const { cart, cartTotal, clearCart } = useCart();
   const [step, setStep] = useState<'info' | 'success'>('info');
   const [isLoading, setIsLoading] = useState(false);

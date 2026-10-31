@@ -5,7 +5,10 @@ import { motion } from 'motion/react';
 import { api } from '../services/api';
 import { toast } from 'react-hot-toast';
 
+import { usePageTitle } from '../lib/usePageTitle'
+
 export default function Signup() {
+  usePageTitle('Sign Up')
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');

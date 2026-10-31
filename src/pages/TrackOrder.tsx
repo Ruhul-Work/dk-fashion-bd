@@ -14,7 +14,10 @@ const STATUS_STEPS = [
   { key: 'delivered', label: 'Delivered' }
 ];
 
+import { usePageTitle } from '../lib/usePageTitle'
+
 export default function TrackOrder() {
+  usePageTitle('Track Order')
   const { settings } = useWebsite();
   const [searchParams] = useSearchParams();
   const initialOrderId = searchParams.get('orderId') || '';

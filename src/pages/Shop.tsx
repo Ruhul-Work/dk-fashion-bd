@@ -32,7 +32,10 @@ function catSlug(c: Category) {
   return c.slug || String(c.id)
 }
 
+import { usePageTitle } from '../lib/usePageTitle'
+
 export default function Shop() {
+  usePageTitle('Shop')
   const [params, setParams] = useSearchParams()
   const categoryParam = params.get('category')
   const searchParam = params.get('q') ?? ''

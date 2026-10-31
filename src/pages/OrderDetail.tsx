@@ -7,7 +7,10 @@ import { Breadcrumbs } from '../components/Breadcrumbs';
 import { api, SERVER_URL } from '../services/api';
 import { useWebsite } from '../context/WebsiteContext';
 
+import { usePageTitle } from '../lib/usePageTitle'
+
 export default function OrderDetail() {
+  usePageTitle('Order Detail')
   const { settings } = useWebsite();
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();

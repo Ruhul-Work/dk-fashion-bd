@@ -11,7 +11,10 @@ import {
   ContactStrip,
 } from '../sections/HomeBottom'
 
+import { usePageTitle } from '../lib/usePageTitle'
+
 export default function Home() {
+  usePageTitle('Home')
   return (
     <main>
       <SectionRail items={[

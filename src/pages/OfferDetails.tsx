@@ -6,6 +6,7 @@ import { Tag, Calendar, Gift, Percent, Truck, Package, ArrowLeft } from 'lucide-
 import { cn } from '../lib/utils';
 import { motion } from 'motion/react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
+import { usePageTitle } from '../lib/usePageTitle';
 
 interface Offer {
   id: number;
@@ -25,6 +26,7 @@ export default function OfferDetails() {
   const navigate = useNavigate();
 
   const [offer, setOffer] = useState<Offer | null>(location.state?.offer || null);
+  usePageTitle(offer?.name || slug || 'Offer')
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingOffer, setLoadingOffer] = useState(!offer);
   const [loadingProducts, setLoadingProducts] = useState(true);

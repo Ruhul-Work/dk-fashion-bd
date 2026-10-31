@@ -4,7 +4,10 @@ import { api, Category, SERVER_URL } from '../services/api';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { motion } from 'motion/react';
 
+import { usePageTitle } from '../lib/usePageTitle'
+
 export default function Categories() {
+  usePageTitle('Categories')
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 

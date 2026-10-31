@@ -9,6 +9,7 @@ import type { Product } from '../lib/types'
 import Price from '../components/Price'
 import { discountPercent, money } from '../lib/pricing'
 import { ProductCard } from '../components/ProductCard'
+import { usePageTitle } from '../lib/usePageTitle'
 import toast from 'react-hot-toast'
 import EmptyState from '../components/EmptyState'
 import { SkeletonCard, SkeletonText } from '../components/Skeletons'
@@ -237,6 +238,7 @@ export default function ProductDetail() {
   const navigate = useNavigate()
   const { addToCart } = useCart()
   const { data: product, loading, error, reload } = useProduct(id)
+  usePageTitle(product?.name)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [selectedSize, setSelectedSize] = useState<string>('')
   const [selectedColor, setSelectedColor] = useState<string>('')

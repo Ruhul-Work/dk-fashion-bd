@@ -4,7 +4,10 @@ import { useAuth } from '../context/AuthContext';
 import { motion } from 'motion/react';
 import { toast } from 'react-hot-toast';
 
+import { usePageTitle } from '../lib/usePageTitle'
+
 export default function Login() {
+  usePageTitle('Login')
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);

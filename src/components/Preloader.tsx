@@ -1,8 +1,16 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { useWebsite } from '../context/WebsiteContext'
+import { SERVER_URL } from '../services/api'
 
 export default function Preloader({ onDone }: { onDone: () => void }) {
   const [lift, setLift] = useState(false)
+  const { settings } = useWebsite()
+  const [logoFailed, setLogoFailed] = useState(false)
+
+  useEffect(() => {
+    setLogoFailed(false)
+  }, [settings?.logo])
 
   useEffect(() => {
     const t = setTimeout(() => setLift(true), 1400)
@@ -26,18 +34,34 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
         animate={{ scale: [0.8, 1.15, 1], opacity: [0, 0.9, 0.6] }}
         transition={{ duration: 1.8, ease: 'easeInOut' }}
       />
-      <motion.h1
-        className="relative font-display text-5xl text-moss sm:text-6xl"
-        initial={{ opacity: 0, scale: 0.82, filter: 'blur(8px)' }}
-        animate={lift ? { opacity: 0, scale: 1.06 } : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
-        transition={
-          lift
-            ? { duration: 0.7, ease: [0.76, 0, 0.24, 1] }
-            : { duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }
-        }
-      >
-        Smart Garments
-      </motion.h1>
+      {settings?.logo && !logoFailed ? (
+        <motion.img
+          src={settings.logo.startsWith('http') ? settings.logo : `${SERVER_URL}${settings.logo}`}
+          alt={settings?.company_name || 'DK Fashion BD'}
+          onError={() => setLogoFailed(true)}
+          className="relative h-16 w-auto object-contain sm:h-20"
+          initial={{ opacity: 0, scale: 0.82, filter: 'blur(8px)' }}
+          animate={lift ? { opacity: 0, scale: 1.06 } : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          transition={
+            lift
+              ? { duration: 0.7, ease: [0.76, 0, 0.24, 1] }
+              : { duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }
+          }
+        />
+      ) : (
+        <motion.h1
+          className="relative font-display text-5xl text-moss sm:text-6xl"
+          initial={{ opacity: 0, scale: 0.82, filter: 'blur(8px)' }}
+          animate={lift ? { opacity: 0, scale: 1.06 } : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          transition={
+            lift
+              ? { duration: 0.7, ease: [0.76, 0, 0.24, 1] }
+              : { duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }
+          }
+        >
+          {settings?.company_name || 'DK Fashion BD'}
+        </motion.h1>
+      )}
       <motion.p
         className="absolute bottom-16 text-xs uppercase tracking-[0.4em] text-olive"
         initial={{ opacity: 0, y: 10 }}

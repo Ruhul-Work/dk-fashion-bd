@@ -6,7 +6,10 @@ import { Link } from 'react-router-dom';
 import { useWebsite } from '../context/WebsiteContext';
 import { toast } from 'react-hot-toast';
 
+import { usePageTitle } from '../lib/usePageTitle'
+
 export default function Profile() {
+  usePageTitle('Profile')
   const { settings } = useWebsite();
   const { user, logout, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);

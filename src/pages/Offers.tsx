@@ -5,7 +5,10 @@ import { motion } from 'motion/react';
 import { OfferCard, Offer } from '../components/OfferCard';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 
+import { usePageTitle } from '../lib/usePageTitle'
+
 export default function Offers() {
+  usePageTitle('Offers')
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loadingOffers, setLoadingOffers] = useState(true);
 
