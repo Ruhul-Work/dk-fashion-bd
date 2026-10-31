@@ -9,6 +9,7 @@ import type { Product } from '../lib/types'
 import Price from '../components/Price'
 import { discountPercent, money } from '../lib/pricing'
 import { ProductCard } from '../components/ProductCard'
+import toast from 'react-hot-toast'
 import EmptyState from '../components/EmptyState'
 import { SkeletonCard, SkeletonText } from '../components/Skeletons'
 import { Magnetic } from '../components/motion-kit'
@@ -237,6 +238,8 @@ export default function ProductDetail() {
   const { addToCart } = useCart()
   const { data: product, loading, error, reload } = useProduct(id)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedSize, setSelectedSize] = useState<string>('')
+  const [selectedColor, setSelectedColor] = useState<string>('')
   const [recommended, setRecommended] = useState<Product[]>([])
   const [recLoading, setRecLoading] = useState(true)
   const [showStickyBar, setShowStickyBar] = useState(false)
@@ -282,15 +285,25 @@ export default function ProductDetail() {
 
   useEffect(() => {
     setSelectedId(null)
+    setSelectedSize('')
+    setSelectedColor('')
     setShowStickyBar(false)
     setChartOpen(false)
   }, [id])
 
   useEffect(() => {
-    if ((product as any)?.children?.length && !selectedId) {
-      setSelectedId(String((product as any).children[0].id))
-    }
-  }, [product, selectedId])
+    if (!product) return
+    const ch = (product as any)?.children ?? []
+    if (!ch.length) return
+    const sizeSet = new Set<string>()
+    const colorSet = new Set<string>()
+    ch.forEach((c: any) => {
+      if (c?.size?.name) sizeSet.add(c.size.name)
+      if (c?.color?.name) colorSet.add(c.color.name)
+    })
+    setSelectedSize((s) => s || (sizeSet.size > 0 ? [...sizeSet][0] : ''))
+    setSelectedColor((c) => c || (colorSet.size > 0 ? [...colorSet][0] : ''))
+  }, [product])
 
   useEffect(() => {
     const el = ctaRef.current
@@ -358,6 +371,31 @@ export default function ProductDetail() {
   const description = shortDescription || longDescription || ''
   const sizeChart = assetUrl((product as any).size_chart_image || (product as any).size_chart_url)
   const buyHref = product.shopee_url ?? ''
+  const variantChildren: any[] = (product as any)?.children ?? []
+  const variantSizes = Array.from(new Set(variantChildren.map((c: any) => c?.size?.name).filter(Boolean)))
+  const variantColors = Array.from(new Set(variantChildren.map((c: any) => c?.color?.name).filter(Boolean)))
+  const hasVariantChildren = variantChildren.length > 0
+
+  const handleAddToCart = (goToCart = false) => {
+    try {
+      let variant: any = product
+      if (hasVariantChildren) {
+        if (variantSizes.length > 0 && variantColors.length > 0) {
+          variant = variantChildren.find((x: any) => x?.size?.name === selectedSize && x?.color?.name === selectedColor)
+        } else if (variantColors.length > 0) {
+          variant = variantChildren.find((x: any) => x?.color?.name === selectedColor)
+        } else if (variantSizes.length > 0) {
+          variant = variantChildren.find((x: any) => x?.size?.name === selectedSize)
+        }
+        if (!variant) {
+          toast.error('This variant not available')
+          return
+        }
+      }
+      addToCart(variant, hasVariantChildren && variantSizes.length > 0 ? (selectedSize as any) : undefined, hasVariantChildren && variantColors.length > 0 ? (selectedColor as any) : undefined)
+      if (goToCart) navigate('/cart')
+    } catch {}
+  }
 
   return (
     <main className="pt-36">
@@ -450,9 +488,43 @@ export default function ProductDetail() {
               />
             )}
 
-            {(product.children?.length ?? 0) > 0 && (
-              <motion.div variants={{ hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: easeSoft } } }}>
-                <Variants items={product.children ?? []} selected={selectedId} onSelect={setSelectedId} />
+            {hasVariantChildren && (
+              <motion.div variants={{ hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: easeSoft } } }} className="space-y-6">
+                {variantSizes.length > 0 && (
+                  <div>
+                    <h4 className="mb-2.5 text-[10px] uppercase tracking-widest text-olive font-medium">Select Size</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {variantSizes.map((size: any) => (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => setSelectedSize(size)}
+                          className={`px-4 py-2.5 text-[10px] uppercase tracking-widest border transition-all rounded-full ${selectedSize === size ? 'bg-moss text-ivory border-moss' : 'border-hairline text-moss hover:border-caramel hover:text-caramel-deep'}`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {variantColors.length > 0 && (
+                  <div>
+                    <h4 className="mb-2.5 text-[10px] uppercase tracking-widest text-olive font-medium">Select Color</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {variantColors.map((color: any) => (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => setSelectedColor(color)}
+                          className={`px-4 py-2.5 text-[10px] uppercase tracking-widest border transition-all rounded-full ${selectedColor === color ? 'bg-moss text-ivory border-moss' : 'border-hairline text-moss hover:border-caramel hover:text-caramel-deep'}`}
+                        >
+                          {color}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -460,7 +532,7 @@ export default function ProductDetail() {
               <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
-                  onClick={() => { try { let variant: any = product; if ((product as any)?.children?.length) variant = (product as any).children.find((x:any)=>String(x.id)===String(selectedId)) || (product as any).children[0]; addToCart(variant, ((product as any)?.children?.length) ? (variant as any)?.size?.name : undefined, ((product as any)?.children?.length) ? (variant as any)?.color?.name : undefined); } catch {} }}
+                  onClick={() => handleAddToCart(false)}
                   data-cursor="hover"
                   className="inline-flex items-center justify-center gap-3 rounded-full bg-moss px-8 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-ivory transition-colors hover:bg-caramel"
                 >
@@ -468,12 +540,7 @@ export default function ProductDetail() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    try {
-                      let variant: any = product; if ((product as any)?.children?.length) variant = (product as any).children.find((x:any)=>String(x.id)===String(selectedId)) || (product as any).children[0]; addToCart(variant, ((product as any)?.children?.length) ? (variant as any)?.size?.name : undefined, ((product as any)?.children?.length) ? (variant as any)?.color?.name : undefined);
-                      navigate('/cart');
-                    } catch {}
-                  }}
+                  onClick={() => handleAddToCart(true)}
                   data-cursor="hover"
                   className="inline-flex items-center justify-center gap-3 rounded-full bg-caramel px-8 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-ivory transition-colors hover:bg-caramel-deep"
                 >
