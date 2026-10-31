@@ -37,7 +37,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
       {settings?.logo && !logoFailed ? (
         <motion.img
           src={settings.logo.startsWith('http') ? settings.logo : `${SERVER_URL}${settings.logo}`}
-          alt={settings?.company_name || 'DK Fashion BD'}
+         
           onError={() => setLogoFailed(true)}
           className="relative h-16 w-auto object-contain sm:h-20"
           initial={{ opacity: 0, scale: 0.82, filter: 'blur(8px)' }}
@@ -48,20 +48,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
               : { duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }
           }
         />
-      ) : (
-        <motion.h1
-          className="relative font-display text-5xl text-moss sm:text-6xl"
-          initial={{ opacity: 0, scale: 0.82, filter: 'blur(8px)' }}
-          animate={lift ? { opacity: 0, scale: 1.06 } : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
-          transition={
-            lift
-              ? { duration: 0.7, ease: [0.76, 0, 0.24, 1] }
-              : { duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }
-          }
-        >
-          {settings?.company_name || 'DK Fashion BD'}
-        </motion.h1>
-      )}
+      ) : null}
       <motion.p
         className="absolute bottom-16 text-xs uppercase tracking-[0.4em] text-olive"
         initial={{ opacity: 0, y: 10 }}
